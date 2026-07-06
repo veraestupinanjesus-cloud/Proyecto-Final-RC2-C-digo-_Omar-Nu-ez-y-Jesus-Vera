@@ -31,6 +31,13 @@ typedef struct {
 } Receta;
 
 // FUNCIONES 
-
+void cargarDatos(Ingrediente *ings, int *t_ing, Plato *platos, int *t_pla, Receta *recs, int *t_rec);
+void guardarDatos(const Ingrediente *ings, int t_ing, const Plato *platos, int t_pla, const Receta *recs, int t_rec);
+void registrarIngrediente(Ingrediente *ings, int *t_ing);
+void listarIngredientes(const Ingrediente *ings, int t_ing);
+void registrarPlato(Plato *platos, int *t_pla);
+void listarPlatos(const Plato *platos, int t_pla, const Ingrediente *ings, int t_ing, const Receta *recs, int t_rec);
+void asociarIngredientePlato(Receta *recs, int *t_rec, const Plato *platos, int t_pla, const Ingrediente *ings, int t_ing);
+float calcularCostoBase(int cod_plato, const Receta *recs, int t_rec, const Ingrediente *ings, int t_ing);
 
 #endif
