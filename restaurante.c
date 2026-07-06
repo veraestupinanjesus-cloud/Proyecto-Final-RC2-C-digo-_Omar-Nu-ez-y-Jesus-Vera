@@ -69,4 +69,36 @@ void guardarDatos(const Ingrediente *ings, int t_ing, const Plato *platos, int t
         }
         fclose(f3);
     }
+}// Autor: Omar Nuñez
+// --- LOGICA DE INGREDIENTES ---
+void registrarIngrediente(Ingrediente *ings, int *t_ing) {
+    if (*t_ing >= MAX_ITEMS) return;
+    Ingrediente nuevo;
+    printf("Codigo Ingrediente: "); scanf("%d", &nuevo.codigo);
+    
+    for(int i=0; i < *t_ing; i++) {
+        if(ings[i].codigo == nuevo.codigo) {
+            printf("Error: Codigo ya existe.\n"); return;
+        }
+    }
+    
+    getchar(); 
+    printf("Nombre: "); fgets(nuevo.nombre, MAX_STR, stdin); nuevo.nombre[strcspn(nuevo.nombre, "\n")] = 0;
+    printf("Costo Unitario: "); scanf("%f", &nuevo.costo_unitario);
+    getchar();
+    printf("Unidad (ej. kg, litros): "); fgets(nuevo.unidad_medida, 20, stdin); nuevo.unidad_medida[strcspn(nuevo.unidad_medida, "\n")] = 0;
+    
+    if (nuevo.costo_unitario > 0) {
+        ings[*t_ing] = nuevo; (*t_ing)++;
+        printf("Ingrediente registrado.\n");
+    } else {
+        printf("Costo invalido.\n");
+    }
+}
+
+void listarIngredientes(const Ingrediente *ings, int t_ing) {
+    printf("\n--- INGREDIENTES ---\n");
+    for (int i = 0; i < t_ing; i++) {
+        printf("ID: %d | %s | $%.2f x %s\n", ings[i].codigo, ings[i].nombre, ings[i].costo_unitario, ings[i].unidad_medida);
+    }
 }
