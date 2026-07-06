@@ -1,4 +1,3 @@
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -69,8 +68,8 @@ void guardarDatos(const Ingrediente *ings, int t_ing, const Plato *platos, int t
         }
         fclose(f3);
     }
-}// Autor: Omar Nuñez
-// --- LOGICA DE INGREDIENTES ---
+}
+// LOGICA DE INGREDIENTES 
 void registrarIngrediente(Ingrediente *ings, int *t_ing) {
     if (*t_ing >= MAX_ITEMS) return;
     Ingrediente nuevo;
@@ -101,4 +100,70 @@ void listarIngredientes(const Ingrediente *ings, int t_ing) {
     for (int i = 0; i < t_ing; i++) {
         printf("ID: %d | %s | $%.2f x %s\n", ings[i].codigo, ings[i].nombre, ings[i].costo_unitario, ings[i].unidad_medida);
     }
+}
+
+// LOGICA DE PLATOS Y COSTOS 
+void registrarPlato(Plato *platos, int *t_pla) {
+    if (*t_pla >= MAX_ITEMS) return;
+    Plato p;
+    printf("Codigo Plato: "); scanf("%d", &p.codigo);
+    for(int i=0; i < *t_pla; i++) {
+        if(platos[i].codigo == p.codigo) { printf("Error: Codigo existe.\n"); return; }
+    }
+    getchar();
+    printf("Nombre Plato: "); fgets(p.nombre, MAX_STR, stdin); p.nombre[strcspn(p.nombre, "\n")] = 0;
+    printf("Categoria: "); fgets(p.categoria, MAX_STR, stdin); p.categoria[strcspn(p.categoria, "\n")] = 0;
+    printf("%% Impuesto (ej. 15): "); scanf("%f", &p.imp_pct);
+    printf("%% Servicio (ej. 10): "); scanf("%f", &p.serv_pct);
+    printf("%% Ganancia (ej. 30): "); scanf("%f", &p.gan_pct);
+    
+    platos[*t_pla] = p; (*t_pla)++;
+    printf("Plato registrado.\n");
+}
+
+float calcularCostoBase(int cod_plato, const Receta *recs, int t_rec, const Ingrediente *ings, int t_ing) {
+    float costoTotal = 0;
+    for (int i = 0; i < t_rec; i++) {
+        if (recs[i].cod_plato == cod_plato) {
+            for (int j = 0; j < t_ing; j++) {
+                if (ings[j].codigo == recs[i].cod_ing) {
+                    costoTotal += (ings[j].costo_unitario * recs[i].cantidad);
+                    break;
+                }
+            }
+        }
+    }
+    return costoTotal;
+}
+
+void listarPlatos(const Plato *platos, int t_pla, const Ingrediente *ings, int t_ing, const Receta *recs, int t_rec) {
+    printf("\n--- MENU DE PLATOS ---\n");
+    for (int i = 0; i < t_pla; i++) {
+        float c_base = calcularCostoBase(platos[i].codigo, recs, t_rec, ings, t_ing);
+        float imp = c_base * (platos[i].imp_pct / 100.0);
+        float serv = c_base * (platos[i].serv_pct / 100.0);
+        float gan = c_base * (platos[i].gan_pct / 100.0);
+        float c_final = c_base + imp + serv + gan;
+
+        printf("ID: %d | %s (%s)\n", platos[i].codigo, platos[i].nombre, platos[i].categoria);
+        printf("   Costo Base: $%.2f | PRECIO FINAL VENTA: $%.2f\n", c_base, c_final);
+    }
+}
+
+// RECETAS la ASOCIACION
+void asociarIngredientePlato(Receta *recs, int *t_rec, const Plato *platos, int t_pla, const Ingrediente *ings, int t_ing) {
+    Receta r;
+    printf("ID Plato a modificar: "); scanf("%d", &r.cod_plato);
+    printf("ID Ingrediente a agregar: "); scanf("%d", &r.cod_ing);
+    printf("Cantidad usada de ese ingrediente: "); scanf("%f", &r.cantidad);
+
+    if(r.cantidad <= 0) { printf("Cantidad invalida.\n"); return; }
+
+    for(int i=0; i<*t_rec; i++) {
+        if(recs[i].cod_plato == r.cod_plato && recs[i].cod_ing == r.cod_ing) {
+            printf("Error: Ya existe.\n"); return;
+        }
+    }
+    recs[*t_rec] = r; (*t_rec)++;
+    printf("Ingrediente asociado al plato exitosamente.\n");
 }
